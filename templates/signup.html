@@ -3,24 +3,24 @@
 <head>
     <title>Sign Up</title>
     <!-- Linking .css file with HTML page -->
-    <link rel="stylesheet" href="signuppagestyle.css">
+    <!--link rel="stylesheet" href="signuppagestyle.css"-->
 </head>
 <body>
     <div>
         <h1>Sign Up</h1>
         <h5>Welcome</h5>
-        <form action="" method="GET">
+        <form method="POST">
             <div>
                 <p><label for="userName">User Name</label></p>
-                <input type="text" id="userName" autocomplete="off" >
+                <input type="text" id="userName" name="userName" autocomplete="off" >
             </div>
             <div>
                 <p><label for="email">Email Address</label></p>
-                <input type="email" id="email" name="email" required autocomplete="off" min="0" max="200">
+                <input type="email" id="email" name="email" required autocomplete="off" min="0" max="200" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.edu$">
             </div>
             <div>
                 <p><label for="password">Password</label></p>
-                <input type="password" id="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required >
+                <input name="password" type="password" id="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required >
                 <!-- An element to toggle between password visibility -->
                 <input type="checkbox" onclick="myFunction()">Show Password
                 <script>
@@ -102,7 +102,7 @@
                 <p id="number" class="invalid">A <b>number</b></p>
                 <p id="length" class="invalid">Minimum <b>8 characters</b></p>
             </div>
-            <button type="button" id="btn">Sign Up Now</button>
+            <button type="submit" id="btn">Sign Up Now</button>
             <p>Already a member? <a href="/">Log in</a></p>
         </form>
     </div>

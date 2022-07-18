@@ -81,7 +81,7 @@ def get_resource_by_pk(table_name: str, id: int):
 
 
 @app.route('/')
-@app.route('home')
+@app.route('/home')
 def login():
     return render_template('signin.html')
 
@@ -91,9 +91,16 @@ def sign_up():
     '''
     Will be using a template. Likely will not need any input
     will need an output from the template in order to add the new user to the database
-
+    '''
     if request.method == 'POST':
-        user = request.form'''
+        user_name = request.form.get('userName', 'default value name')
+        email = request.form.get('email', 'default value email')
+        password = request.form.get('password', 'default value password')
+        print('user name: ' + user_name)
+        print('email: ' + email)
+        print('password: ' + password)
+        engine.execute("INSERT INTO user (user_name, user_email, user_phone_number, user_address, user_password) "
+        "VALUES (?, ?, '(123)-456-7890', '123 ABC Street', ?);", ((user_name), (email), (password)))
     return render_template('signup.html')  # add user function
     # return 'sign up page'
 
