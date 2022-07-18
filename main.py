@@ -4,7 +4,7 @@ import googlemaps
 import os
 import pandas as pd
 import sqlalchemy as db
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from sqlalchemy import text
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer
 from sqlalchemy.orm import Session, registry
@@ -82,7 +82,7 @@ def get_resource_by_pk(table_name: str, id: int):
 
 @app.route('/')
 def login():
-    return 'login page'
+    return render_template('signin.html')
 
 
 @app.route("/sign_up", methods=['POST', 'GET'])
@@ -93,7 +93,7 @@ def sign_up():
     '''
     if request.method == 'POST':
         user = request.form
-        return 'signing up please wait a moment'  # add user function
+        return render_template('signup.html')  # add user function
     return 'sign up page'
 
 
