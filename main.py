@@ -81,7 +81,7 @@ def get_resource_by_pk(table_name: str, id: int):
 
 
 @app.route('/')
-@app.route('home')
+@app.route('/home')
 def login():
     return render_template('signin.html')
 
