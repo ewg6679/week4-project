@@ -10,9 +10,7 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer
 from sqlalchemy.orm import Session, registry
 from sqlalchemy.ext.declarative import declarative_base
 
-
 Base = declarative_base()
-
 
 engine = db.create_engine('sqlite:///buy_sell_database.sql')
 meta = MetaData()
@@ -48,11 +46,6 @@ app = Flask(__name__)
 session = Session(engine)
 
 
-@app.route('/')
-def hello():
-    return 'hello world'
-
-
 # raw query
 @app.route('/<table_name>')
 def get_table_data(table_name: str):
@@ -85,6 +78,66 @@ def get_resource_by_pk(table_name: str, id: int):
     for r in results:
         data.append(dict(r))
     return jsonify(data)
+
+
+@app.route('/')
+def login():
+    return 'login page'
+
+
+@app.route("/sign_up", methods=['POST', 'GET'])
+def sign_up():
+    '''
+    Will be using a template. Likely will not need any input
+    will need an output from the template in order to add the new user to the database
+    '''
+    if request.method == 'POST':
+        user = request.form
+        return 'signing up please wait a moment'  # add user function
+    return 'sign up page'
+
+
+
+@app.route("/buy_sell")
+def buy_sell():
+    '''
+    Display buy or sell page
+    '''
+    return 'buy or sell page'
+
+
+@app.route("/buy")
+def list_of_items():
+    '''
+    use render template to load the data into whatever the template is
+    This is the list of items page where each item is on display
+    '''
+    results = session.execute(text('select * from item'))
+    data = []
+    for r in results:
+        data.append(dict(r))
+    return jsonify(data)
+
+
+@app.route("/item/<int:id>")
+def get_item(id: int):
+    results = session.execute(text('select * from item where item_id={}'.format(id)))
+    data = []
+    for r in results:
+        data.append(dict(r))
+    return jsonify(data)
+
+
+@app.route('/sell', methods=['POST', 'GET'])
+def sell_item():
+    '''
+    Will be using a template. Likely will not need any input
+    will need an output from the template in order to add the new item to the database
+    '''
+    if request.method == 'POST':
+        user = request.form
+        return 'adding item please wait a moment'  # add user function
+    return 'sign up page'
 
 
 if __name__ == '__main__':
