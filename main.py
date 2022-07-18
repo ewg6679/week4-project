@@ -13,6 +13,7 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 engine = db.create_engine('sqlite:///buy_sell_database.sql')
+
 meta = MetaData()
 meta.reflect(bind=engine, views=True)
 mapper_registry = registry()
@@ -80,9 +81,28 @@ def get_resource_by_pk(table_name: str, id: int):
     return jsonify(data)
 
 
-@app.route('/')
-@app.route('/home')
+@app.route('/', methods=['POST', 'GET'])
+@app.route('/home', methods=['POST', 'GET'])
 def login():
+    if request.method == 'POST':
+        email = request.form.get('email', 'default value email')
+        password = request.form.get('password', 'default value password')
+        print('email: ' + email)
+        print('password: ' + password)
+        try:
+            connection = engine.connect()
+            cursor = connection.execute("SELECT user_password from user where user_email=?;", (email))
+            result = cursor.scalar()
+            print(result)
+            print(type(result))
+            if password == result:
+                print('successful sign-in')
+        except:
+            print("unsuccessful login")
+        finally:
+            if not connection.closed:
+                cursor.close()
+                connection.close()
     return render_template('signin.html')
 
 
