@@ -81,24 +81,25 @@ def get_resource_by_pk(table_name: str, id: int):
 
 
 @app.route('/')
+@app.route('home')
 def login():
     return render_template('signin.html')
 
 
-@app.route("/sign_up", methods=['POST', 'GET'])
+@app.route('/sign_up', methods=['POST', 'GET'])
 def sign_up():
     '''
     Will be using a template. Likely will not need any input
     will need an output from the template in order to add the new user to the database
-    '''
+
     if request.method == 'POST':
-        user = request.form
-        return render_template('signup.html')  # add user function
-    return 'sign up page'
+        user = request.form'''
+    return render_template('signup.html')  # add user function
+    # return 'sign up page'
 
 
 
-@app.route("/buy_sell")
+@app.route('/buy_sell')
 def buy_sell():
     '''
     Display buy or sell page
@@ -106,7 +107,7 @@ def buy_sell():
     return 'buy or sell page'
 
 
-@app.route("/buy")
+@app.route('/buy')
 def list_of_items():
     '''
     use render template to load the data into whatever the template is
@@ -119,7 +120,7 @@ def list_of_items():
     return jsonify(data)
 
 
-@app.route("/item/<int:id>")
+@app.route('/item/<int:id>')
 def get_item(id: int):
     results = session.execute(text('select * from item where item_id={}'.format(id)))
     data = []
@@ -133,11 +134,11 @@ def sell_item():
     '''
     Will be using a template. Likely will not need any input
     will need an output from the template in order to add the new item to the database
-    '''
+    
     if request.method == 'POST':
         user = request.form
-        return 'adding item please wait a moment'  # add user function
-    return 'sign up page'
+        return 'adding item please wait a moment'''  # add user function
+    return 'add item page'
 
 
 if __name__ == '__main__':
