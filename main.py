@@ -47,22 +47,10 @@ app = Flask(__name__)
 session = Session(engine)
 
 
-# raw query
-@app.route('/<table_name>')
-def get_table_data(table_name: str):
-    if table_name in meta.tables:
-        print('legal')
-    else:
-        print('illegal table')
-        return jsonify([])
-    results = session.execute(text('select * from {}'.format(table_name)))
-    data = []
-    for r in results:
-        data.append(dict(r))
-    return jsonify(data)
 
 
-@app.route('/<table_name>/<int:id>')
+
+'''@app.route('/<table_name>/<int:id>')
 def get_resource_by_pk(table_name: str, id: int):
     if table_name in meta.tables:
         print('legal')
@@ -78,7 +66,7 @@ def get_resource_by_pk(table_name: str, id: int):
     data = []
     for r in results:
         data.append(dict(r))
-    return jsonify(data)
+    return jsonify(data)'''
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -105,6 +93,14 @@ def login():
                 connection.close()
     return render_template('signin.html')
 
+# raw query
+@app.route('/user')
+def get_table_data():
+    results = session.execute(text('select * from user'))
+    data = []
+    for r in results:
+        data.append(dict(r))
+    return jsonify(data)
 
 @app.route('/sign_up', methods=['POST', 'GET'])
 def sign_up():
@@ -116,14 +112,15 @@ def sign_up():
         user_name = request.form.get('userName', 'default value name')
         email = request.form.get('email', 'default value email')
         password = request.form.get('password', 'default value password')
-        phone_number = request.form.get('phoneNumber', 'default')
+        phone_number = request.form.get('phoneNumber', 'default phone_number')
+        address = request.form.get('address', 'default address')
         print('user name: ' + user_name)
         print('email: ' + email)
         print('password: ' + password)
         print('phone number: ' + phone_number)
-        print("form: " + str(request.form))
+        print('address: ' + address)
         engine.execute("INSERT INTO user (user_name, user_email, user_phone_number, user_address, user_password) "
-        "VALUES (?, ?, ?, '123 ABC Street', ?);", (user_name, email, phone_number, password))
+        "VALUES (?, ?, ?, ?, ?);", (user_name, email, phone_number, address, password))
     return render_template('signup.html')  # add user function
     # return 'sign up page'
 

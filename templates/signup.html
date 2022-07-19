@@ -102,8 +102,11 @@
                 <p id="number" class="invalid">A <b>number</b></p>
                 <p id="length" class="invalid">Minimum <b>8 characters</b></p>
             </div>
-            <div class="autocomplete-container" id="autocomplete-container"></div>
-            <script name="address" type="text/javascript" src="{{ url_for('static', filename='address.js') }}"></script>
+            <div class="autocomplete-container" id="autocomplete-container">
+                <p><label for="address">Address</label></p>
+                <input name="address" type="text" id="address">
+                <script type="text/javascript" src="address.js"></script>
+            </div>
             <div>
                 <p><label for="phone">Phone Number</label></p> 
                 <input = "text" name = "phoneNumber" size = "10"/>
