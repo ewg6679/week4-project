@@ -12,17 +12,17 @@
         <form method="POST">
             <div>
                 <p><label for="userName">User Name</label></p>
-                <input type="text" id="userName" name="userName" autocomplete="off" >
+                <input name="userName" type="text" id="userName" autocomplete="off" >
             </div>
             <div>
                 <p><label for="email">Email Address</label></p>
-                <input type="email" id="email" name="email" required autocomplete="off" min="0" max="200" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.edu$">
+                <input type="email" id="email" name="email" required autocomplete="off" min="0" max="200">
             </div>
             <div>
                 <p><label for="password">Password</label></p>
                 <input name="password" type="password" id="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required >
                 <!-- An element to toggle between password visibility -->
-                <input type="checkbox" onclick="myFunction()">Show Password
+                <input type="checkbox" onclick="myFunction()">Show Password 
                 <script>
                     var myInput = document.getElementById("psw");
                     var letter = document.getElementById("letter");
@@ -47,7 +47,7 @@
                         if(myInput.value.match(lowerCaseLetters)) {
                             letter.classList.remove("invalid");
                             letter.classList.add("valid");
-                        }
+                        } 
                         else {
                             letter.classList.remove("valid");
                             letter.classList.add("invalid");
@@ -88,7 +88,7 @@
                         var x = document.getElementById("myInput");
                         if (x.type === "password") {
                             x.type = "text";
-                        }
+                        } 
                         else {
                             x.type = "password";
                         }
@@ -102,9 +102,15 @@
                 <p id="number" class="invalid">A <b>number</b></p>
                 <p id="length" class="invalid">Minimum <b>8 characters</b></p>
             </div>
+            <div class="autocomplete-container" id="autocomplete-container"></div>
+            <script name="address" type="text/javascript" src="{{ url_for('static', filename='address.js') }}"></script>
+            <div>
+                <p><label for="phone">Phone Number</label></p> 
+                <input = "text" name = "phoneNumber" size = "10"/>
+            </div>
             <button type="submit" id="btn">Sign Up Now</button>
             <p>Already a member? <a href="/">Log in</a></p>
-        </form>
+        </form>  
     </div>
 </body>
 </html>

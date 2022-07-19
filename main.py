@@ -4,7 +4,7 @@ import requests
 import os
 # import pandas as pd
 import sqlalchemy as db
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, url_for
 from sqlalchemy import text
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer
 from sqlalchemy.orm import Session, registry
@@ -116,11 +116,14 @@ def sign_up():
         user_name = request.form.get('userName', 'default value name')
         email = request.form.get('email', 'default value email')
         password = request.form.get('password', 'default value password')
+        phone_number = request.form.get('phoneNumber', 'default')
         print('user name: ' + user_name)
         print('email: ' + email)
         print('password: ' + password)
+        print('phone number: ' + phone_number)
+        print("form: " + str(request.form))
         engine.execute("INSERT INTO user (user_name, user_email, user_phone_number, user_address, user_password) "
-        "VALUES (?, ?, '(123)-456-7890', '123 ABC Street', ?);", ((user_name), (email), (password)))
+        "VALUES (?, ?, ?, '123 ABC Street', ?);", (user_name, email, phone_number, password))
     return render_template('signup.html')  # add user function
     # return 'sign up page'
 
@@ -131,7 +134,7 @@ def buy_sell():
     '''
     Display buy or sell page
     '''
-    return 'buy or sell page'
+    return render_template('buy_or_sell_page.html')
 
 
 @app.route('/buy')
@@ -144,7 +147,8 @@ def list_of_items():
     data = []
     for r in results:
         data.append(dict(r))
-    return jsonify(data)
+    d = jsonify(data)
+    return render_template('list_of_items_page.html')
 
 
 @app.route('/item/<int:id>')
@@ -164,8 +168,20 @@ def sell_item():
     
     if request.method == 'POST':
         user = request.form
-        return 'adding item please wait a moment'''  # add user function
-    return 'add item page'
+        return 'adding item please wait a moment'''
+    if request.method == 'POST':
+        item_name = request.form.get('name', 'default item name')
+        price = request.form.get('email', 'default price')
+        description = request.form.get('password', 'default description')
+        #phone_number = request.form.get('phoneNumber', 'default')
+        print('item name: ' + item_name)
+        print('price: ' + price)
+        print('description: ' + description)
+        #print('phone number: ' + phone_number)
+        #print("form: " + str(request.form))
+        engine.execute("INSERT INTO item (item_name, item_price, item_description, seller_id) "
+        "VALUES (?, ?, ?, '1');", (item_name, price, description))  # add user function
+    return render_template('post_item.html')
 
 
 if __name__ == '__main__':
