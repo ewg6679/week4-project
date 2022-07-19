@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Webpage Name</title>
+    <link rel="stylesheet" href=" ">
+</head>
+<body>
+    <ul>
+        <li><a href = "itempage.html">Item Name</a>
+            <?php
+            if (isset($_POST['submit'])) {
+                $NAME = $_POST["name"];
+                $EMAIL = $_POST["email"];
+ 
+                echo "Name is = ". $NAME .'</br>';
+                echo "Email is = ". $EMAIL .'</br>';
+ 
+            }
+ ?>
+</body>
+</html>
