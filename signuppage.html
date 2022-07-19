@@ -16,7 +16,7 @@
             </div>
             <div>
                 <p><label for="email">Email Address</label></p>
-                <input type="email" id="email" name="email" required autocomplete="off" min="0" max="200">
+                <input type="email" id="email" name="email" required autocomplete="off" pattern ="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).edu" min="0" max="200">
             </div>
             <div>
                 <p><label for="password">Password</label></p>
@@ -101,6 +101,13 @@
                 <p id="capital" class="invalid">A <b>capital (uppercase)</b> letter</p>
                 <p id="number" class="invalid">A <b>number</b></p>
                 <p id="length" class="invalid">Minimum <b>8 characters</b></p>
+            </div>
+            <div class="autocomplete-container" id="autocomplete-container"></div>
+            <script type="text/javascript" src="address.js"></script>
+            <div>
+                <p><label for="phone">Phone Number</label></p> 
+                <input = "text" name = "country code" value="+1" size = "1"/>
+                <input type="text" name ="phone number" size = "10"/>
             </div>
             <button type="button" id="btn">Sign Up Now</button>
             <p>Already a member? <a href="signinpage.html">Log in</a></p>
