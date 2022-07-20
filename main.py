@@ -93,7 +93,7 @@ def login():
                 print("successful login")
                 flash(f'Account created for you!', 'success')
                 print(url_for('buy_sell'))
-                return redirect(url_for('buy_sell'))
+                return redirect('https://lucassaturn-preciseaugust-5000.codio.io/buy_sell')
             flash("unsuccessful login")
         except Exception as ex:
             print("unsuccessful login")
@@ -128,7 +128,7 @@ def sign_up():
         print('address: ' + address)
         engine.execute("INSERT INTO user (user_name, user_email, user_phone_number, user_address, user_password) "
         "VALUES (?, ?, ?, ?, ?);", (user_name, email, phone_number, address, password))
-        #return redirect(url_for('buy_sell'))
+        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/buy_sell')
         #return render_template('signin.html')
     return render_template('signup.html')  # add user function
     # return 'sign up page'
