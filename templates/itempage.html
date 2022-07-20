@@ -4,24 +4,30 @@
     <title>
         Website Name
     </title>
-    <!--script type = "text/javascript" src ="itempage.js"></script-->
+    <script type = "text/javascript" src ="itempage.js"></script>
 </head>
 <body>
-    <h1>Item Name: {{ item['item_name'] }} </h1>
-    <h2>Price: {{ item['item_price'] }}</h2>
-    <h3>Description: {{ item['item_description'] }}</h3> 
-    <h1>Image:</h1>
-    <img src="{{ url_for('static', filename='images/' + item['item_id']|string + '.png') }}" class="center">
-    <br>
+   
+    {% for actual_item in item_list %}
+        <h1>Item Name: {{ actual_item['item_name'] }} </h1>
+        <h2>Price: {{ actual_item['item_price'] }}</h2>
+        <h3>Description: {{ actual_item['item_description'] }}</h3> 
+        <h1>Image:</h1>
+        <img src="{{ url_for('static', filename='images/' + actual_item['item_id']|string + '.png') }}" class="center">
+        <br>
+    {% endfor %}
 
     <h2>
         Seller Information
     </h2>
 
-        <h1>Seller Name: {{ seller['user_name'] }} </h1>
-        <h2>Email: {{ seller['user_email'] }}</h2>
-        <h3>Phone Number: {{ seller['user_phone_number'] }}</h3> 
+    {% for actual_seller in seller_list %}
+        <h1>Seller Name: {{ actual_seller['seller_name'] }} </h1>
+        <h2>Email: {{ actual_seller['seller_email'] }}</h2>
+        <h3>Phone Number: {{ actual_seller['phone_number'] }}</h3> 
+        <h3>Distance from seller: {{ actual_seller['distance'] }}</h3>
         <br>
+    {% endfor %}
 
     
     <!--Space for the Map-->
