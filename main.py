@@ -148,11 +148,15 @@ def list_of_items():
 
 @app.route('/item/<int:id>')
 def get_item(id: int):
-    results = session.execute(text('select * from item where item_id={}'.format(id)))
-    data = []
-    for r in results:
-        data.append(dict(r))
-    return jsonify(data)
+    item_results = session.execute(text('select * from item where item_id={}'.format(id)))
+    item_data = {}
+    for r in item_results:
+        item_data = dict(r)
+    seller_results = session.execute(text('select * from user where user_id={}'.format(item_data['seller_id'])))
+    seller_data = {}
+    for r in seller_results:
+        seller_data = dict(r)
+    return render_template('itempage.html', item=item_data, seller=seller_data)
 
 
 @app.route('/sell', methods=['POST', 'GET'])
