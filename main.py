@@ -43,11 +43,10 @@ if not inspector.has_table("item"):
         ")")
 
 app = Flask(__name__)
+UPLOAD_FOLDER = 'week4-project/static/images'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 session = Session(engine)
-
-
-
 
 
 '''@app.route('/<table_name>/<int:id>')
@@ -93,7 +92,7 @@ def login():
                 connection.close()
     return render_template('signin.html')
 
-# raw query
+# for testing
 @app.route('/user')
 def get_table_data():
     results = session.execute(text('select * from user'))
@@ -145,6 +144,7 @@ def list_of_items():
     for r in results:
         data.append(dict(r))
     d = jsonify(data)
+    print(d)
     return render_template('list_of_items_page.html')
 
 
@@ -168,16 +168,39 @@ def sell_item():
         return 'adding item please wait a moment'''
     if request.method == 'POST':
         item_name = request.form.get('name', 'default item name')
-        price = request.form.get('email', 'default price')
-        description = request.form.get('password', 'default description')
+        price = request.form.get('price', 'default price')
+        description = request.form.get('itemDesc', 'default description')
+        #img = request.files['photo']
         #phone_number = request.form.get('phoneNumber', 'default')
         print('item name: ' + item_name)
         print('price: ' + price)
         print('description: ' + description)
+        # print('image path:' + img)
+        
         #print('phone number: ' + phone_number)
         #print("form: " + str(request.form))
+        id_num = 0
+        try:
+            connection = engine.connect()
+            cursor = connection.execute("SELECT count(*) from item;")
+            result = cursor.scalar()
+            id_num = int(result) + 1
+        except:
+            print("something went wrong")
+        finally:
+            if not connection.closed:
+                cursor.close()
+                connection.close()
         engine.execute("INSERT INTO item (item_name, item_price, item_description, seller_id) "
-        "VALUES (?, ?, ?, '1');", (item_name, price, description))  # add user function
+        "VALUES (?, ?, ?, '1');", (item_name, price, description))
+        
+        #path = os.path.join(app.config['UPLOAD_FOLDER'], img.filename)
+        photo = request.files['photo']
+        filename = '{}.png'.format(id_num)
+        #path = os.path.join(app.config['UPLOAD_FOLDER'], photo.filename)
+        #photo.save(path)  # add user function
+        #filename = photo.filename
+        photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     return render_template('post_item.html')
 
 
