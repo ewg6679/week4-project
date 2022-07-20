@@ -25,11 +25,10 @@
         <h1>Seller Name: {{ actual_seller['seller_name'] }} </h1>
         <h2>Email: {{ actual_seller['seller_email'] }}</h2>
         <h3>Phone Number: {{ actual_seller['phone_number'] }}</h3> 
-        <h3>Distance from seller: {{ actual_seller['distance'] }}</h3>
         <br>
     {% endfor %}
 
-    
+    <h3>Distance from seller: {{ distance }}</h3>
     <!--Space for the Map-->
 
     <button type="submit" id="btn">Purchase</button>
