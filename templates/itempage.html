@@ -8,30 +8,27 @@
 </head>
 <body>
    
-    <h3>
-        Item Name <span id = "item_name" />
-    </h3>
-    <h3>
-        Item Price <span id = "item_price" />
-    </h3>
-    <h3>
-        Item Descripton <span id ="item_description" />
-    </h3>
+    {% for actual_item in item_list %}
+        <h1>Item Name: {{ actual_item['item_name'] }} </h1>
+        <h2>Price: {{ actual_item['item_price'] }}</h2>
+        <h3>Description: {{ actual_item['item_description'] }}</h3> 
+        <h1>Image:</h1>
+        <img src="{{ url_for('static', filename='images/' + actual_item['item_id']|string + '.png') }}" class="center">
+        <br>
+    {% endfor %}
 
     <h2>
         Seller Information
     </h2>
 
-    <h3>
-        Name <span id = "userName" />
-    </h3>
-    <h3>
-        Email <span id = "email" />
-    </h3>
-    <h3>
-        Phone Number <span id = "phoneNumber" />
-    </h3>
+    {% for actual_seller in seller_list %}
+        <h1>Seller Name: {{ actual_seller['seller_name'] }} </h1>
+        <h2>Email: {{ actual_seller['seller_email'] }}</h2>
+        <h3>Phone Number: {{ actual_seller['phone_number'] }}</h3> 
+        <br>
+    {% endfor %}
 
+    
     <!--Space for the Map-->
 
     <button type="submit" id="btn">Purchase</button>
