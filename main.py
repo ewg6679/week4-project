@@ -143,9 +143,7 @@ def list_of_items():
     data = []
     for r in results:
         data.append(dict(r))
-    d = jsonify(data)
-    print(d)
-    return render_template('list_of_items_page.html')
+    return render_template('list_of_items_page.html', item_list=data)
 
 
 @app.route('/item/<int:id>')
