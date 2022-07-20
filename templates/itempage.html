@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        Website Name
+    </title>
+    <!--script type = "text/javascript" src ="itempage.js"></script-->
+</head>
+<body>
+    <h1>Item Name: {{ item['item_name'] }} </h1>
+    <h2>Price: {{ item['item_price'] }}</h2>
+    <h3>Description: {{ item['item_description'] }}</h3> 
+    <h1>Image:</h1>
+    <img src="{{ url_for('static', filename='images/' + item['item_id']|string + '.png') }}" class="center">
+    <br>
+
+    <h2>
+        Seller Information
+    </h2>
+
+        <h1>Seller Name: {{ seller['user_name'] }} </h1>
+        <h2>Email: {{ seller['user_email'] }}</h2>
+        <h3>Phone Number: {{ seller['user_phone_number'] }}</h3> 
+        <br>
+
+        <h3>Distance from seller: {{ distance }}</h3>
+    <!--Space for the Map-->
+
+    <button type="submit" id="btn">Purchase</button>
+</body>
+</html>
