@@ -1,10 +1,10 @@
 from pprint import pprint
 import requests
-# import googlemaps
+import googlemaps
 import os
 # import pandas as pd
 import sqlalchemy as db
-from flask import Flask, jsonify, request, render_template, url_for
+from flask import Flask, flash, redirect, jsonify, request, render_template, url_for
 from sqlalchemy import text
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer
 from sqlalchemy.orm import Session, registry
@@ -44,9 +44,11 @@ if not inspector.has_table("item"):
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'week4-project/static/images'
+app.config['SECRET_KEY'] = 'fec93d1b1cb7926beb25960608b25818'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 session = Session(engine)
+user_data = None
 
 
 '''@app.route('/<table_name>/<int:id>')
@@ -71,25 +73,31 @@ def get_resource_by_pk(table_name: str, id: int):
 @app.route('/', methods=['POST', 'GET'])
 @app.route('/home', methods=['POST', 'GET'])
 def login():
+    flash('hello')
+    global user_data
+    print(user_data)
     if request.method == 'POST':
         email = request.form.get('email', 'default value email')
         password = request.form.get('password', 'default value password')
         print('email: ' + email)
         print('password: ' + password)
         try:
-            connection = engine.connect()
-            cursor = connection.execute("SELECT user_password from user where user_email=?;", (email))
-            result = cursor.scalar()
-            print(result)
-            print(type(result))
-            if password == result:
-                print('successful sign-in')
-        except:
+            print('in try')
+            user_results = session.execute(text("select * from user where user_email='{}'".format(str(email))))
+            print(user_results)
+            for r in user_results:
+                print(r)
+                user_data = dict(r)
+            print(user_data)
+            if password == user_data['user_password']:
+                print("successful login")
+                flash(f'Account created for you!', 'success')
+                print(url_for('buy_sell'))
+                return redirect(url_for('buy_sell'))
+            flash("unsuccessful login")
+        except Exception as ex:
             print("unsuccessful login")
-        finally:
-            if not connection.closed:
-                cursor.close()
-                connection.close()
+            print("error" + str(ex))
     return render_template('signin.html')
 
 # for testing
@@ -120,16 +128,19 @@ def sign_up():
         print('address: ' + address)
         engine.execute("INSERT INTO user (user_name, user_email, user_phone_number, user_address, user_password) "
         "VALUES (?, ?, ?, ?, ?);", (user_name, email, phone_number, address, password))
+        #return redirect(url_for('buy_sell'))
+        #return render_template('signin.html')
     return render_template('signup.html')  # add user function
     # return 'sign up page'
 
 
 
-@app.route('/buy_sell')
+@app.route('/buy_sell', methods=['GET', 'POST'])
 def buy_sell():
     '''
     Display buy or sell page
     '''
+    print('HELLO')
     return render_template('buy_or_sell_page.html')
 
 
@@ -156,11 +167,16 @@ def get_item(id: int):
     seller_data = {}
     for r in seller_results:
         seller_data = dict(r)
-    return render_template('itempage.html', item=item_data, seller=seller_data)
+    location = map_client.distance_matrix(user_data['user_address'], seller_data['user_address'])
+    distance_in_km = location['rows'][0]['elements'][0]['distance']['text']
+    time = location['rows'][0]['elements'][0]['duration']['text']
+    return render_template('itempage.html', item=item_data, seller=seller_data, distance=distance_in_km)
 
 
 @app.route('/sell', methods=['POST', 'GET'])
 def sell_item():
+    global user_data
+    print(user_data)
     '''
     Will be using a template. Likely will not need any input
     will need an output from the template in order to add the new item to the database
@@ -194,7 +210,7 @@ def sell_item():
                 cursor.close()
                 connection.close()
         engine.execute("INSERT INTO item (item_name, item_price, item_description, seller_id) "
-        "VALUES (?, ?, ?, '1');", (item_name, price, description))
+        "VALUES (?, ?, ?, ?);", (item_name, price, description, user_data['user_id']))
         
         #path = os.path.join(app.config['UPLOAD_FOLDER'], img.filename)
         photo = request.files['photo']
