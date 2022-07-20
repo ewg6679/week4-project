@@ -2,20 +2,20 @@
 <html>
 <head>
     <title>Webpage Name</title>
-    <!--link rel="stylesheet" href=" "-->
 </head>
 <body>
-    <ul>
-        <li><a href = "itempage.html">Item Name</a>
-            <?php
-            if (isset($_POST['submit'])) {
-                $NAME = $_POST["name"];
-                $EMAIL = $_POST["email"];
- 
-                echo "Name is = ". $NAME .'</br>';
-                echo "Email is = ". $EMAIL .'</br>';
- 
-            }
- ?>
+    {% for actual_item in item_list %}
+        {% for key, value in actual_item.items() %}
+            {% if key == "name" %}
+                <h1>Name: {{value}}</h1>
+            {% elif key == "item_price" %}
+                <h2>Price: {{value}}</h2>
+            {% elif key == "item_description" %}
+                <h3>Description: {{value}}</h3>
+            {% elif key == "image" %} 
+                <h1>Iamge: {{value}}</h1>
+        {% endfor %}
+    {% endfor %}
 </body>
 </html>
+
