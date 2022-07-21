@@ -42,7 +42,7 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'week4-project/static/images'
 app.config['SECRET_KEY'] = 'fec93d1b1cb7926beb25960608b25818'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-map_client = googlemaps.Client('AIzaSyBU105nhaExFWjtUldUDYwFxEKG5bogWPU')
+map_client = googlemaps.Client([[API_KEY]])
 Session = sessionmaker(engine)
 
 user_data = None
@@ -66,7 +66,6 @@ def login():
                 print("successful login")
                 return redirect(url_for('buy_sell'))
         except Exception as ex:
-            flash('Please check your login details and try again.')
             print("error" + str(ex))
     return render_template('signin.html')
 
@@ -161,7 +160,7 @@ def sell_item():
         user = request.form
         return 'adding item please wait a moment'''
     if user_data is None:
-        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/error')
+        return redirect('/error')
     if request.method == 'POST':
         item_name = request.form.get('name', 'default item name')
         price = request.form.get('price', 'default price')
