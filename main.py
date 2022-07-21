@@ -5,7 +5,7 @@ import sqlalchemy as db
 from flask import Flask, redirect, jsonify, request, render_template, url_for
 from sqlalchemy import text
 from sqlalchemy import create_engine, MetaData
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -43,7 +43,8 @@ UPLOAD_FOLDER = 'week4-project/static/images'
 app.config['SECRET_KEY'] = 'fec93d1b1cb7926beb25960608b25818'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 map_client = googlemaps.Client([[API_KEY]])
-session = Session(engine)
+Session = sessionmaker(engine)
+
 user_data = None
 
 
@@ -51,16 +52,19 @@ user_data = None
 @app.route('/home', methods=['POST', 'GET'])
 def login():
     global user_data
+
     if request.method == 'POST':
         email = request.form.get('email', 'default value email')
         password = request.form.get('password', 'default value password')
         try:
-            user_results = session.execute(text("select * from user where user_email='{}'".format(str(email))))
-            for r in user_results:
-                user_data = dict(r)
+            user_results = None
+            with Session.begin() as session:
+                user_results = session.execute(text("select * from user where user_email='{}'".format(str(email))))
+                for r in user_results:
+                    user_data = dict(r)
             if password == user_data['user_password']:
                 print("successful login")
-                return redirect('https://lucassaturn-preciseaugust-5000.codio.io/buy_sell')
+                return redirect(url_for('buy_sell'))
         except Exception as ex:
             print("unsuccessful login")
             print("error" + str(ex))
@@ -69,10 +73,12 @@ def login():
 # for testing
 @app.route('/user')
 def get_table_data():
-    results = session.execute(text('select * from user'))
+    results = None
     data = []
-    for r in results:
-        data.append(dict(r))
+    with Session.begin() as session:
+        results = session.execute(text('select * from user'))
+        for r in results:
+            data.append(dict(r))
     return jsonify(data)
 
 @app.route('/sign_up', methods=['POST', 'GET'])
@@ -89,7 +95,7 @@ def sign_up():
         address = request.form.get('address', 'default address')
         engine.execute("INSERT INTO user (user_name, user_email, user_phone_number, user_address, user_password) "
         "VALUES (?, ?, ?, ?, ?);", (user_name, email, phone_number, address, password))
-        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/')
+        return redirect(url_for('home'))
     return render_template('signup.html')
 
 
@@ -101,7 +107,7 @@ def buy_sell():
     Display buy or sell page
     '''
     if user_data is None:
-        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/error')
+        return redirect('/error')
     return render_template('buy_or_sell_page.html')
 
 
@@ -113,36 +119,40 @@ def list_of_items():
     This is the list of items page where each item is on display
     '''
     if user_data is None:
-        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/error')
-    results = session.execute(text('select * from item'))
+        return redirect('/error')
+    results = None
     data = []
-    for r in results:
-        data.append(dict(r))
+    with Session.begin() as session:
+        results = session.execute(text('select * from item'))
+        for r in results:
+            data.append(dict(r))
     return render_template('list_of_items_page.html', item_list=data)
 
 
 @app.route('/item/<int:id>')
 def get_item(id: int):
     global user_data
+    item_data = {}
+    seller_data = {}
     if user_data is None:
         return redirect('https://lucassaturn-preciseaugust-5000.codio.io/error')
-    item_results = session.execute(text('select * from item where item_id={}'.format(id)))
-    item_data = {}
-    for r in item_results:
-        item_data = dict(r)
-    seller_results = session.execute(text('select * from user where user_id={}'.format(item_data['seller_id'])))
-    seller_data = {}
-    for r in seller_results:
-        seller_data = dict(r)
+    with Session.begin() as session:
+        item_results = session.execute(text('select * from item where item_id={}'.format(id)))
+        for ir in item_results:
+            item_data = dict(ir)
+    with Session.begin() as session:
+        seller_results = session.execute(text('select * from user where user_id={}'.format(item_data['seller_id'])))
+        for sr in seller_results:
+            seller_data = dict(sr)
     location = map_client.distance_matrix(user_data['user_address'], seller_data['user_address'])
     distance_in_km = location['rows'][0]['elements'][0]['distance']['text']
-    time = location['rows'][0]['elements'][0]['duration']['text']
     return render_template('itempage.html', item=item_data, seller=seller_data, distance=distance_in_km, user_address=user_data['user_address'])
 
 
 @app.route('/sell', methods=['POST', 'GET'])
 def sell_item():
     global user_data
+    connection = None
     '''
     Will be using a template. Likely will not need any input
     will need an output from the template in order to add the new item to the database
