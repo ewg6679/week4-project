@@ -2,7 +2,7 @@ import requests
 import googlemaps
 import os
 import sqlalchemy as db
-from flask import Flask, redirect, jsonify, request, render_template, url_for, flash
+from flask import Flask, redirect, jsonify, request, render_template, url_for
 from sqlalchemy import text
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
