@@ -2,7 +2,7 @@ import requests
 import googlemaps
 import os
 import sqlalchemy as db
-from flask import Flask, redirect, jsonify, request, render_template, url_for
+from flask import Flask, redirect, jsonify, request, render_template, url_for, flash
 from sqlalchemy import text
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
@@ -42,7 +42,7 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'week4-project/static/images'
 app.config['SECRET_KEY'] = 'fec93d1b1cb7926beb25960608b25818'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-map_client = googlemaps.Client([[API_KEY]])
+map_client = googlemaps.Client('AIzaSyBU105nhaExFWjtUldUDYwFxEKG5bogWPU')
 Session = sessionmaker(engine)
 
 user_data = None
@@ -66,7 +66,7 @@ def login():
                 print("successful login")
                 return redirect(url_for('buy_sell'))
         except Exception as ex:
-            print("unsuccessful login")
+            flash('Please check your login details and try again.')
             print("error" + str(ex))
     return render_template('signin.html')
 
@@ -95,7 +95,7 @@ def sign_up():
         address = request.form.get('address', 'default address')
         engine.execute("INSERT INTO user (user_name, user_email, user_phone_number, user_address, user_password) "
         "VALUES (?, ?, ?, ?, ?);", (user_name, email, phone_number, address, password))
-        return redirect("/")
+        return redirect(url_for('sign_up'))
     return render_template('signup.html')
 
 
@@ -135,7 +135,7 @@ def get_item(id: int):
     item_data = {}
     seller_data = {}
     if user_data is None:
-        return redirect('/error')
+        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/error')
     with Session.begin() as session:
         item_results = session.execute(text('select * from item where item_id={}'.format(id)))
         for ir in item_results:
@@ -161,7 +161,7 @@ def sell_item():
         user = request.form
         return 'adding item please wait a moment'''
     if user_data is None:
-        return redirect('/error')
+        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/error')
     if request.method == 'POST':
         item_name = request.form.get('name', 'default item name')
         price = request.form.get('price', 'default price')
