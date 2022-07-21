@@ -95,7 +95,7 @@ def sign_up():
         address = request.form.get('address', 'default address')
         engine.execute("INSERT INTO user (user_name, user_email, user_phone_number, user_address, user_password) "
         "VALUES (?, ?, ?, ?, ?);", (user_name, email, phone_number, address, password))
-        return redirect(url_for('home'))
+        return redirect("/")
     return render_template('signup.html')
 
 
@@ -135,7 +135,7 @@ def get_item(id: int):
     item_data = {}
     seller_data = {}
     if user_data is None:
-        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/error')
+        return redirect('/error')
     with Session.begin() as session:
         item_results = session.execute(text('select * from item where item_id={}'.format(id)))
         for ir in item_results:
@@ -161,7 +161,7 @@ def sell_item():
         user = request.form
         return 'adding item please wait a moment'''
     if user_data is None:
-        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/error')
+        return redirect('/error')
     if request.method == 'POST':
         item_name = request.form.get('name', 'default item name')
         price = request.form.get('price', 'default price')
