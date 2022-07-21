@@ -94,7 +94,7 @@ def sign_up():
         address = request.form.get('address', 'default address')
         engine.execute("INSERT INTO user (user_name, user_email, user_phone_number, user_address, user_password) "
         "VALUES (?, ?, ?, ?, ?);", (user_name, email, phone_number, address, password))
-        return redirect(url_for('sign_up'))
+        return redirect('/')
     return render_template('signup.html')
 
 
@@ -134,7 +134,7 @@ def get_item(id: int):
     item_data = {}
     seller_data = {}
     if user_data is None:
-        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/error')
+        return redirect('/error')
     with Session.begin() as session:
         item_results = session.execute(text('select * from item where item_id={}'.format(id)))
         for ir in item_results:
@@ -143,9 +143,7 @@ def get_item(id: int):
         seller_results = session.execute(text('select * from user where user_id={}'.format(item_data['seller_id'])))
         for sr in seller_results:
             seller_data = dict(sr)
-    location = map_client.distance_matrix(user_data['user_address'], seller_data['user_address'])
-    distance_in_km = location['rows'][0]['elements'][0]['distance']['text']
-    return render_template('itempage.html', item=item_data, seller=seller_data, distance=distance_in_km, user_address=user_data['user_address'])
+    return render_template('itempage.html', item=item_data, seller=seller_data, user_address=user_data['user_address'])
 
 
 @app.route('/sell', methods=['POST', 'GET'])
