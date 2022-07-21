@@ -1,13 +1,11 @@
-from pprint import pprint
 import requests
 import googlemaps
 import os
-# import pandas as pd
 import sqlalchemy as db
-from flask import Flask, flash, redirect, jsonify, request, render_template, url_for
+from flask import Flask, redirect, jsonify, request, render_template, url_for
 from sqlalchemy import text
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer
-from sqlalchemy.orm import Session, registry
+from sqlalchemy import create_engine, MetaData
+from sqlalchemy.orm import Session
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -16,7 +14,6 @@ engine = db.create_engine('sqlite:///buy_sell_database.sql')
 
 meta = MetaData()
 meta.reflect(bind=engine, views=True)
-mapper_registry = registry()
 inspector = db.inspect(engine)
 if not inspector.has_table("user"):
     engine.execute(
@@ -28,7 +25,6 @@ if not inspector.has_table("user"):
         "`user_address` TEXT NOT NULL,"
         "`user_password` TEXT NOT NULL"
         ")")
-    # engine.execute(f"INSERT INTO game (id) VALUES (1);")
 
 if not inspector.has_table("item"):
     engine.execute(
@@ -51,50 +47,20 @@ session = Session(engine)
 user_data = None
 
 
-'''@app.route('/<table_name>/<int:id>')
-def get_resource_by_pk(table_name: str, id: int):
-    if table_name in meta.tables:
-        print('legal')
-    else:
-        print('illegal table')
-        return jsonify({})
-    pk = ''
-    cols = meta.tables[table_name].columns
-    for c in cols:
-        if c.primary_key:
-            pk = c.name
-    results = session.execute(text('select * from {} where {}={}'.format(table_name, pk, id)))
-    data = []
-    for r in results:
-        data.append(dict(r))
-    return jsonify(data)'''
-
-
 @app.route('/', methods=['POST', 'GET'])
 @app.route('/home', methods=['POST', 'GET'])
 def login():
-    flash('hello')
     global user_data
-    print(user_data)
     if request.method == 'POST':
         email = request.form.get('email', 'default value email')
         password = request.form.get('password', 'default value password')
-        print('email: ' + email)
-        print('password: ' + password)
         try:
-            print('in try')
             user_results = session.execute(text("select * from user where user_email='{}'".format(str(email))))
-            print(user_results)
             for r in user_results:
-                print(r)
                 user_data = dict(r)
-            print(user_data)
             if password == user_data['user_password']:
                 print("successful login")
-                flash(f'Account created for you!', 'success')
-                print(url_for('buy_sell'))
                 return redirect('https://lucassaturn-preciseaugust-5000.codio.io/buy_sell')
-            flash("unsuccessful login")
         except Exception as ex:
             print("unsuccessful login")
             print("error" + str(ex))
@@ -121,35 +87,33 @@ def sign_up():
         password = request.form.get('password', 'default value password')
         phone_number = request.form.get('phoneNumber', 'default phone_number')
         address = request.form.get('address', 'default address')
-        print('user name: ' + user_name)
-        print('email: ' + email)
-        print('password: ' + password)
-        print('phone number: ' + phone_number)
-        print('address: ' + address)
         engine.execute("INSERT INTO user (user_name, user_email, user_phone_number, user_address, user_password) "
         "VALUES (?, ?, ?, ?, ?);", (user_name, email, phone_number, address, password))
-        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/buy_sell')
-        #return render_template('signin.html')
-    return render_template('signup.html')  # add user function
-    # return 'sign up page'
+        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/')
+    return render_template('signup.html')
 
 
 
 @app.route('/buy_sell', methods=['GET', 'POST'])
 def buy_sell():
+    global user_data
     '''
     Display buy or sell page
     '''
-    print('HELLO')
+    if user_data is None:
+        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/error')
     return render_template('buy_or_sell_page.html')
 
 
 @app.route('/buy')
 def list_of_items():
+    global user_data
     '''
     use render template to load the data into whatever the template is
     This is the list of items page where each item is on display
     '''
+    if user_data is None:
+        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/error')
     results = session.execute(text('select * from item'))
     data = []
     for r in results:
@@ -159,6 +123,9 @@ def list_of_items():
 
 @app.route('/item/<int:id>')
 def get_item(id: int):
+    global user_data
+    if user_data is None:
+        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/error')
     item_results = session.execute(text('select * from item where item_id={}'.format(id)))
     item_data = {}
     for r in item_results:
@@ -176,7 +143,6 @@ def get_item(id: int):
 @app.route('/sell', methods=['POST', 'GET'])
 def sell_item():
     global user_data
-    print(user_data)
     '''
     Will be using a template. Likely will not need any input
     will need an output from the template in order to add the new item to the database
@@ -184,19 +150,12 @@ def sell_item():
     if request.method == 'POST':
         user = request.form
         return 'adding item please wait a moment'''
+    if user_data is None:
+        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/error')
     if request.method == 'POST':
         item_name = request.form.get('name', 'default item name')
         price = request.form.get('price', 'default price')
         description = request.form.get('itemDesc', 'default description')
-        #img = request.files['photo']
-        #phone_number = request.form.get('phoneNumber', 'default')
-        print('item name: ' + item_name)
-        print('price: ' + price)
-        print('description: ' + description)
-        # print('image path:' + img)
-        
-        #print('phone number: ' + phone_number)
-        #print("form: " + str(request.form))
         id_num = 0
         try:
             connection = engine.connect()
@@ -211,16 +170,14 @@ def sell_item():
                 connection.close()
         engine.execute("INSERT INTO item (item_name, item_price, item_description, seller_id) "
         "VALUES (?, ?, ?, ?);", (item_name, price, description, user_data['user_id']))
-        
-        #path = os.path.join(app.config['UPLOAD_FOLDER'], img.filename)
         photo = request.files['photo']
         filename = '{}.png'.format(id_num)
-        #path = os.path.join(app.config['UPLOAD_FOLDER'], photo.filename)
-        #photo.save(path)  # add user function
-        #filename = photo.filename
         photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     return render_template('post_item.html')
 
+@app.route('/error')
+def display_error():
+    return render_template('error.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")
