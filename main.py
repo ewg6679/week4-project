@@ -46,7 +46,7 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'week4-project/static/images'
 app.config['SECRET_KEY'] = 'fec93d1b1cb7926beb25960608b25818'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
+map_client = googlemaps.Client('AIzaSyBU105nhaExFWjtUldUDYwFxEKG5bogWPU')
 session = Session(engine)
 user_data = None
 
@@ -170,7 +170,7 @@ def get_item(id: int):
     location = map_client.distance_matrix(user_data['user_address'], seller_data['user_address'])
     distance_in_km = location['rows'][0]['elements'][0]['distance']['text']
     time = location['rows'][0]['elements'][0]['duration']['text']
-    return render_template('itempage.html', item=item_data, seller=seller_data, distance=distance_in_km)
+    return render_template('itempage.html', item=item_data, seller=seller_data, distance=distance_in_km, user_address=user_data['user_address'])
 
 
 @app.route('/sell', methods=['POST', 'GET'])

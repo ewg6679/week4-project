@@ -25,6 +25,17 @@
 
         <h3>Distance from seller: {{ distance }}</h3>
     <!--Space for the Map-->
+        <iframe
+            width="600"
+            height="450"
+            style="border:0"
+            loading="lazy"
+            allowfullscreen
+            referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.google.com/maps/embed/v1/directions?key=AIzaSyBU105nhaExFWjtUldUDYwFxEKG5bogWPU
+            &origin={{ user_address }}
+            &destination={{ seller['user_address'] }}">
+        </iframe>
 
     <button type="submit" id="btn">Purchase</button>
 </body>
