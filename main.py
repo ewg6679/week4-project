@@ -64,7 +64,7 @@ def login():
                     user_data = dict(r)
             if password == user_data['user_password']:
                 print("successful login")
-                return redirect(url_for('buy_sell'))
+                return redirect('https://lucassaturn-preciseaugust-5000.codio.io/buy_sell')
         except Exception as ex:
             print("error" + str(ex))
     return render_template('signin.html')
@@ -94,7 +94,7 @@ def sign_up():
         address = request.form.get('address', 'default address')
         engine.execute("INSERT INTO user (user_name, user_email, user_phone_number, user_address, user_password) "
         "VALUES (?, ?, ?, ?, ?);", (user_name, email, phone_number, address, password))
-        return redirect('/')
+        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/')
     return render_template('signup.html')
 
 
@@ -106,7 +106,7 @@ def buy_sell():
     Display buy or sell page
     '''
     if user_data is None:
-        return redirect('/error')
+        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/error')
     return render_template('buy_or_sell_page.html')
 
 
@@ -118,7 +118,7 @@ def list_of_items():
     This is the list of items page where each item is on display
     '''
     if user_data is None:
-        return redirect('/error')
+        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/error')
     results = None
     data = []
     with Session.begin() as session:
@@ -134,7 +134,7 @@ def get_item(id: int):
     item_data = {}
     seller_data = {}
     if user_data is None:
-        return redirect('/error')
+        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/error')
     with Session.begin() as session:
         item_results = session.execute(text('select * from item where item_id={}'.format(id)))
         for ir in item_results:
@@ -158,7 +158,7 @@ def sell_item():
         user = request.form
         return 'adding item please wait a moment'''
     if user_data is None:
-        return redirect('/error')
+        return redirect('https://lucassaturn-preciseaugust-5000.codio.io/error')
     if request.method == 'POST':
         item_name = request.form.get('name', 'default item name')
         price = request.form.get('price', 'default price')
